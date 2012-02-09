@@ -1,0 +1,120 @@
+.tvimage {
+	display: none;
+}
+
+.tvCropContainer {
+	outline: 1px dotted #eee;
+	margin: 15px 0;
+}
+
+.tvCropContainer button {
+	font: normal 12px Arial, Helvetica, sans-serif;
+	color: #333;
+}
+
+.addTnButton {
+	width: 150px;
+}
+
+.jcrop-holder {
+	display: inline-block;
+	*zoom: 1;
+	*display: inline;
+	vertical-align: top;
+}
+
+.jcrop-holder .right {
+	padding: 0 !important;
+}
+
+.cropTpl {
+	margin-bottom: 15px;
+}
+
+.cropTpl > div {
+	display: inline-block;
+	*zoom: 1;
+	*display: inline;
+}
+
+.cropImage {
+	max-width: 500px;
+}
+
+/*.cropRight {
+	display: inline-block;
+	*zoom: 1;
+	*display: inline;
+	vertical-align: top;
+}*/
+
+.cropControls {
+	border: 1px solid #ccc;
+	padding: 15px;
+	text-align: center;
+}
+
+.cropControls label {
+	display: inline-block;
+	width: 60px;
+	margin-bottom: 7px;
+}
+
+.cropControls input[type="text"] {
+	width: 40px !important;
+}
+
+.cropControls input[disabled], .cropControls button[disabled] {
+	color: #999;
+}
+
+.withError {
+	box-shadow: 0px 0px 3px red;
+}
+
+.cropPreview {
+	height: 142px;
+	overflow: hidden;
+	position: fixed;
+	bottom: 15px;
+	right: 15px;
+	z-index: 3;
+	border: 1px solid #333;
+}
+
+.cropParamsAccept {
+	/*position: relative;
+	bottom: 12px;
+	left: 5px;*/
+	width: 35px;
+	overflow: auto;
+}
+
+div.imageInfo {
+	font: bold 11px Verdana, Geneva, Arial, Helvetica, sans-serif;
+	color: #aaa;
+	padding-bottom: 5px;
+	display: block;
+	margin: 0;
+}
+
+.imageInfo span {
+	cursor: pointer;
+	color: #E0B8BD;
+}
+
+.imageInfo span:hover {
+	color: red;
+}
+
+.saveProfile, .cropIt {
+	width: 122px;
+}
+
+.cropppedPreview {
+	max-width: 200px;
+}
+
+.croppedPreview {
+	max-width: 300px;
+}

@@ -1,0 +1,9 @@
+Код плагина:
+require $_SERVER['DOCUMENT_ROOT'].'/assets/plugins/tvcropper/tvcropper.php';
+
+Конфигурация:
+-
+
+События:
+OnDocFormPrerender
+OnDocFormRender
