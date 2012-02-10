@@ -1,8 +1,8 @@
 (function($) {
 	$(function() {
 
-		// профили размеров
-		var profiles = ['120 x 120', '160 x 90', '300 x 200', '30 x 50'];
+		// временный объект селекта профилей
+		var profileSelectCache;
 
 		// генерирует рандом для сброса кеша статичных файлов
 		var getCacheRandom = function() {
@@ -23,15 +23,23 @@
 
 		// создаёт объект селекта с профилями
 		var createProfileSelect = function() {
-			var output = '<select class="profiles" name="profiles">';
-			/*for(var i=0; i<profiles.length; i++) {*/
-			for(var i=0; i<tvcropperProfiles.length; i++) {
-				output += '<option value="'+tvcropperProfiles[i]+'">'+tvcropperProfiles[i]+'</option>';
+			if(profileSelectCache) {
+				output = profileSelectCache.clone();
 			}
-			output += '<option value="dontresize">без ресайза</option>';
-			output += '<option value="custom">новый...</option>';
-			output += '</select>';
-			return $(output);
+			else {
+				var output = '<select class="profiles" name="profiles">';
+				for(var i=0; i<tvcropperProfiles.length; i++) {
+					output += '<option value="'+tvcropperProfiles[i]+'">'+tvcropperProfiles[i]+'</option>';
+				}
+				output += '<option value="dontresize">без ресайза</option>';
+				output += '<option value="custom">новый...</option>';
+				output += '</select>';
+				
+				output = $(output);
+				profileSelectCache = output.clone();
+			}
+			
+			return output;
 		}
 
 		// показывает уже добавленные превью и кнопку "добавить"
@@ -76,10 +84,11 @@
 			var img = $('<img class="cropImage" src="/'+tv.field.val()+'" alt="" />');  // основное изображение
 			var preview = $('<img src="/'+tv.field.val()+'" alt="" />');                // превью
 			var acceptButton = $('<button class="cropParamsAccept">OK</button>');       // принять ширину и высоту
-			var cropButton = $('<button class="cropIt">Вырезать!</button>');                // кропить
+			var cropButton = $('<button class="cropIt">Вырезать</button>');                // кропить
 			var imageInfo = $('<div class="imageInfo">Исходное изображение: '+baseImage.width+' x '+baseImage.height+'</div>');
 			var profileSelect = createProfileSelect();                                  // селект с профилями
 			var saveProfileButton = $('<button class="saveProfile">Сохр. профиль</button>');
+			var removeProfileButton = $('<button class="removeProfile">Удалить профиль</button>');
 
 
 			// рабочий шаблон
@@ -99,6 +108,7 @@
 			cropTpl.find('.cropPreview').width(previewWidth);
 			cropTpl.find('.cropPreview').html(preview);
 			cropButton.before(saveProfileButton);
+			saveProfileButton.after(removeProfileButton);
 			profileSelect.before('<label>Профиль:</label>').after(' &nbsp; ');
 
 			// развешиваем события
@@ -306,7 +316,25 @@
 			});
 
 			saveProfileButton.click(function () {
-
+				$.post(
+					'/assets/plugins/tvcropper/saveprofile.ajax.php',
+					{
+						action: 'add',
+						width: tnWidth,
+						height: tnHeight
+					},
+					function(answer, status, xhr) {
+						if(answer.success) {
+							alert(answer.message);
+							profileSelect.prepend('<option name="'+tnWidth+' x '+tnHeight+'">'+tnWidth+' x '+tnHeight+'</option>');
+							profileSelectCache = profileSelect.clone();
+						}
+						else if(answer.fail) {
+							alert(answer.message);
+						}
+					},
+					'json'
+				);
 				return false;
 			});
 

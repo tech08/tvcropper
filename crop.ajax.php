@@ -93,16 +93,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		case 'jpeg':
 			if(imagejpeg($destImage, $_SERVER['DOCUMENT_ROOT'].$sourcePath, $jpegQuality)) {
 				$output = array('success'=>true, 'path'=>$sourcePath);
+				break;
 			}
 
 		case 'png':
 			if(imagepng($destImage, $_SERVER['DOCUMENT_ROOT'].$sourcePath)) {
 				$output = array('success'=>true, 'path'=>$sourcePath);
+				break;
 			}
 
 		case 'gif':
 			if(imagegif($destImage, $_SERVER['DOCUMENT_ROOT'].$sourcePath)) {
 				$output = array('success'=>true, 'path'=>$sourcePath);
+				break;
 			}
 	}
 	/*imagedestroy($sourceImage);

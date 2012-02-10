@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
-	<profile width="50" height="50"></profile>
-	<profile width="80" height="70"></profile>
-	<profile width="200" height="300"></profile>
-	<profile width="300" height="200"></profile>
-	<profile width="150" height="150"></profile>
-</root>
+	<profile width="50" height="50"/>
+	<profile width="80" height="70"/>
+	<profile width="200" height="300"/>
+	<profile width="300" height="200"/>
+	<profile width="150" height="150"/>
+<profile width="75" height="50"/><profile width="66" height="66"/><profile width="100" height="200"/><profile width="300" height="210"/></root>
