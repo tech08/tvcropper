@@ -48,8 +48,9 @@
 		var showImages = function(tv, baseImage) {
 
 			$.post(
-				'/assets/plugins/tvcropper/tnsearch.ajax.php',
+				'/assets/plugins/tvcropper/ajax.php',
 				{
+					type: 'tnsearch',
 					path: baseImage.src
 				},
 				function(answer, status, xhr) {
@@ -85,16 +86,20 @@
 			// создаём элементы с событиями
 			var img = $('<img class="cropImage" src="/'+tv.field.val()+'" alt="" />');	// основное изображение
 			var preview = $('<img src="/'+tv.field.val()+'" alt="" />');				// превью
-			var acceptButton = $('<button class="cropParamsAccept">OK</button>');		// принять ширину и высоту
-			var cropButton = $('<button class="cropIt">Вырезать</button>');				// кропить
+			var acceptButton = $('<input title="Применить" class="cropParamsAccept" type="image" src="/assets/plugins/tvcropper/images/ok.png" />');		// принять ширину и высоту
+			
+			//var cropButton = $('<button class="cropIt">Вырезать</button>');				// кропить
+			var cropButton = $('<input title="Вырезать" class="cropIt" type="image" src="/assets/plugins/tvcropper/images/crop.png" />');	// кропить
+			
 			var imageInfo = $('<div class="imageInfo">Исходное изображение: '+baseImage.width+' x '+baseImage.height+'</div>');
 			var profileSelect = createProfileSelect();									// селект с профилями
-			var saveProfileButton = $('<button class="saveProfile">Сохр. профиль</button>');
-			var removeProfileButton = $('<button class="removeProfile">Удалить профиль</button>');
-
+			var saveProfileButton = $('<input title="Сохранить профиль" class="saveProfile" type="image" src="/assets/plugins/tvcropper/images/save.png" />');
+			var removeProfileButton = $('<input title="Удалить профиль" class="removeProfile" type="image" src="/assets/plugins/tvcropper/images/remove.png" />');
+			var closeWorkArea = $('<span class="closeWA" title="Закрыть">×</span>');
+			
 
 			// рабочий шаблон
-			var cropTpl = '<div class="cropTpl"><div><div class="cropRight">'+
+			var cropTpl = '<div class="cropTpl"><div class="cropTplInner"><div class="cropRight">'+
 				'<div class="cropControls">'+
 				'<label>Размеры:</label><input type="text" name="cropWidth" /> × <input type="text" name="cropHeight" />'+
 				'</div>'+
@@ -103,14 +108,16 @@
 			cropTpl = $(cropTpl);
 			cropTpl.find('>div').prepend(img);
 			cropTpl.find('>div').prepend(imageInfo);
+			cropTpl.find('>div').prepend(closeWorkArea);
 			cropTpl.find('[name="cropHeight"]').after(acceptButton);
-			acceptButton.after('<br />').before(' &nbsp; ');
+			acceptButton.after(' &nbsp; ').before(' &nbsp; ');
 			cropTpl.find('.cropControls').append(cropButton);
 			cropTpl.find('.cropControls').prepend(profileSelect);
 			cropTpl.find('.cropPreview').width(previewWidth);
 			cropTpl.find('.cropPreview').html(preview);
-			cropButton.before(saveProfileButton);
+			profileSelect.after(saveProfileButton);
 			saveProfileButton.after(removeProfileButton);
+			removeProfileButton.before(' ').after(' &nbsp; ');
 			profileSelect.before('<label>Профиль:</label>').after(' &nbsp; ');
 
 			// развешиваем события
@@ -294,8 +301,9 @@
 
 				// отправляем запрос на ресайз
 				$.post(
-					'/assets/plugins/tvcropper/crop.ajax.php',
+					'/assets/plugins/tvcropper/ajax.php',
 					{
+						type: 'crop',
 						source_image: baseImage.src,
 						source_x: c.x1,
 						source_y: c.y1,
@@ -310,8 +318,8 @@
 							var newPreview = new Image;
 							newPreview.onload = function() {
 								// если уже есть такое превью, то просто обновляем там картинку
-								if( $('.cropTpl[rel="'+tnWidth+'x'+tnHeight+'"]').length ) {
-									$('.cropTpl[rel="'+tnWidth+'x'+tnHeight+'"]')
+								if( tv.wrapper.find('.cropTpl[rel="'+tnWidth+'x'+tnHeight+'"]').length ) {
+									tv.wrapper.find('.cropTpl[rel="'+tnWidth+'x'+tnHeight+'"]')
 										.empty()
 										.append('<div class="imageInfo"><em>Превью: '+tnWidth+' x '+tnHeight+'</em> <span title="Удалить">(×)</span></div>')
 										.append('<img class="croppedPreview" src="'+answer.path+'?'+getCacheRandom()+'" alt="" />');
@@ -331,6 +339,9 @@
 							};
 							newPreview.src = answer.path;
 						}
+						else if(answer.fail) {
+							alert(answer.message);
+						}
 					}
 					,
 					'json'
@@ -342,8 +353,9 @@
 			// сохраняем новый профиль
 			saveProfileButton.click(function () {
 				$.post(
-					'/assets/plugins/tvcropper/saveprofile.ajax.php',
+					'/assets/plugins/tvcropper/ajax.php',
 					{
+						type: 'saveprofile',
 						action: 'add',
 						width: tnWidth,
 						height: tnHeight
@@ -367,10 +379,11 @@
 			
 			// удаляем профиль
 			removeProfileButton.click(function() {
-				if(confirm('Удалить этот профиль')) {
+				if(confirm('Удалить этот профиль?')) {
 					$.post(
-						'/assets/plugins/tvcropper/saveprofile.ajax.php',
+						'/assets/plugins/tvcropper/ajax.php',
 						{
+							type: 'saveprofile',
 							action: 'remove',
 							width: tnWidth,
 							height: tnHeight
@@ -389,6 +402,14 @@
 					);
 				}
 				return false;
+			});
+			
+			// закрываем рабочую область
+			closeWorkArea.click(function() {
+				cropTpl.fadeOut('fast', function() {
+					$(this).remove();
+					$(button).show();
+				});
 			});
 
 			// выводим шаблон
@@ -444,9 +465,6 @@
 
 				baseImage.src = ('/'+$(this).val()).replace('//', '/');
 			});
-
-			// скрываем превью от managermanager
-			//tv.wrapper.find('.tvimage').hide();
 		});
 
 		// удаляем превью
@@ -454,8 +472,9 @@
 			if(confirm('Удалить это превью?')) {
 				var thisContainer = $(this).parents('.cropTpl');
 				$.post(
-					'/assets/plugins/tvcropper/remove.ajax.php',
+					'/assets/plugins/tvcropper/ajax.php',
 					{
+						type: 'remove',
 						path: thisContainer.find('.croppedPreview').attr('src')
 					},
 					function(answer, status, xhr) {
@@ -476,10 +495,10 @@
 		// показываем/убираем превью
 		$('.jcrop-holder').live('mouseover', function() {
 			if($(window).width() > 940) {
-				$('.cropPreview').stop().fadeTo('fast', 1);
+				$(this).parents('.cropTpl').find('.cropPreview').stop().fadeTo('fast', 1);
 			}
 		}).live('mouseout', function() {
-			$('.cropPreview').stop().fadeOut('normal', 0);
+			$(this).parents('.cropTpl').find('.cropPreview').stop().fadeOut('normal', 0);
 		});
 	});
 })(jQuery);

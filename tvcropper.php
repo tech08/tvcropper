@@ -1,5 +1,6 @@
 <?php
-if(!isset($modx)) die('not enougn mana...');
+//if(!isset($modx)) die('not enougn mana...');
+isset($modx) or die('not enougn mana...');
 
 
 $e = $modx->Event;

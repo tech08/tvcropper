@@ -1,19 +1,27 @@
-/*.tvimage {
-	display: none;
-}*/
+.cropTpl select, .cropTpl input, .cropTpl button {
+	vertical-align: middle !important;
+}
+
+.cropTplInner {
+	border: 1px solid #ccc;
+	background: #eee;
+	padding: 10px;
+	border-radius: 5px;
+	position: relative;
+}
 
 .tvCropContainer {
-	outline: 1px dotted #eee;
+	/*outline: 1px dotted #eee;*/
 	margin: 15px 0;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	padding: 10px;
+	background: #f5f5f5;
 }
 
 .tvCropContainer button {
 	font: normal 12px Arial, Helvetica, sans-serif;
 	color: #333;
-}
-
-.addTnButton {
-	width: 150px;
 }
 
 .jcrop-holder {
@@ -41,16 +49,8 @@
 	max-width: 500px;
 }
 
-/*.cropRight {
-	display: inline-block;
-	*zoom: 1;
-	*display: inline;
-	vertical-align: top;
-}*/
-
 .cropControls {
-	border: 1px solid #ccc;
-	padding: 15px;
+	padding: 15px 0 5px;
 	text-align: center;
 }
 
@@ -81,8 +81,9 @@
 	bottom: 15px;
 	right: 15px;
 	z-index: 3;
-	border: 1px solid #333;
+	border: 1px solid #777;
 	display: none;
+	box-shadow: 0 0 10px 3px rgba(0,0,0,.5);
 }
 
 .cropParamsAccept {
@@ -95,7 +96,7 @@
 
 div.imageInfo {
 	font: bold 11px Verdana, Geneva, Arial, Helvetica, sans-serif;
-	color: #aaa;
+	color: #999;
 	padding-bottom: 5px;
 	display: block;
 	margin: 0;
@@ -110,14 +111,42 @@ div.imageInfo {
 	color: red;
 }
 
-.saveProfile, .cropIt {
+.cropIt {
 	width: 122px;
 }
 
-.cropppedPreview {
-	max-width: 200px;
+
+
+.cropTpl input[type="image"] {
+	width: 16px !important;
+	height: 16px !important;
+	background: none;
+}
+
+.cropTpl input[type="image"]:hover {
+	opacity: .8;
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=80);
+}
+
+.cropTpl input[type="image"][disabled] {
+	opacity: .3;
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=30);
+	cursor: default;
 }
 
 .croppedPreview {
 	max-width: 300px;
+}
+
+.closeWA {
+	position: absolute;
+	top: -5px;
+	right: 5px;
+	color: #E0B8BD;
+	font-size: 22px;
+	cursor: pointer;
+}
+
+.closeWA:hover {
+	color: red;
 }
