@@ -13,12 +13,13 @@ session_start();
 if(!isset($_SESSION['mgrValidated'])) die('not enougn mana...');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-	$xml = simplexml_load_file('profiles.xml');
-	$root = $xml->xpath('/root');
-	$root = $root[0];
 	
 	if(!is_numeric($_POST['width']) || !is_numeric($_POST['height'])) die();
 	if($_POST['action']=='add') {
+		$xml = simplexml_load_file('profiles.xml');
+		$root = $xml->xpath('/root');
+		$root = $root[0];
+		
 		$newProfile = $root->addChild('profile');
 		$newProfile->addAttribute('width', $_POST['width']);
 		$newProfile->addAttribute('height', $_POST['height']);
@@ -38,10 +39,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		die(json_encode($output));
 	}
 	elseif($_POST['action']=='remove') {
-		$profile = $root->xpath('/profile[@width="'.$_POST['width'].'"][@height="'.$_POST['height'].'"]');
-		unset($profile);
+		$xml = new DOMDocument;
+		$xml->load('profiles.xml');
 		
-		if($xml->asXML('profiles.xml')) {
+		$xpath = new DOMXPath($xml);
+		$profiles = $xpath->query('//profile[@width="'.$_POST['width'].'"][@height="'.$_POST['height'].'"]');
+		
+		foreach($profiles as $profile) {
+			$profile->parentNode->removeChild($profile);
+		}
+		
+		if($xml->save('profiles.xml')) {
 			$output = array(
 				'success' => true,
 				'message' => 'Профиль удалён'

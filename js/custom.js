@@ -8,18 +8,18 @@
 		var getCacheRandom = function() {
 			var min = 0, max = 10000;
 			return Math.random()*(max-min)+min;
-		}
+		};
 
 		// добавляет css файл в head
 		var regCss = function(path) {
 
 			var tag = '<link href="'+path+'?'+getCacheRandom()+'" type="text/css" rel="stylesheet" />';
 			$('head').append(tag);
-		}
+		};
 
 		var renameCroppedPreview = function() {
 			$('.cropTpl[rel="0x0"]').find('.imageInfo em').text('Кадрированное');
-		}
+		};
 
 		// создаёт объект селекта с профилями
 		var createProfileSelect = function() {
@@ -28,8 +28,10 @@
 			}
 			else {
 				var output = '<select class="profiles" name="profiles">';
-				for(var i=0; i<tvcropperProfiles.length; i++) {
-					output += '<option value="'+tvcropperProfiles[i]+'">'+tvcropperProfiles[i]+'</option>';
+				if(tvcropperProfiles) {
+					for(var i=0; i<tvcropperProfiles.length; i++) {
+						output += '<option value="'+tvcropperProfiles[i]+'">'+tvcropperProfiles[i]+'</option>';
+					}
 				}
 				output += '<option value="dontresize">без ресайза</option>';
 				output += '<option value="custom">новый...</option>';
@@ -40,7 +42,7 @@
 			}
 			
 			return output;
-		}
+		};
 
 		// показывает уже добавленные превью и кнопку "добавить"
 		var showImages = function(tv, baseImage) {
@@ -74,19 +76,19 @@
 				},
 				'json'
 			);
-		}
+		};
 
 		// выводит рабочую область для кропа
 		var openWorkLayout = function(tv, button, baseImage) {
 			var jcropAPI, boundx, boundy, tnWidth, tnHeight, previewWidth = 190, coords = {};
 
 			// создаём элементы с событиями
-			var img = $('<img class="cropImage" src="/'+tv.field.val()+'" alt="" />');  // основное изображение
-			var preview = $('<img src="/'+tv.field.val()+'" alt="" />');                // превью
-			var acceptButton = $('<button class="cropParamsAccept">OK</button>');       // принять ширину и высоту
-			var cropButton = $('<button class="cropIt">Вырезать</button>');                // кропить
+			var img = $('<img class="cropImage" src="/'+tv.field.val()+'" alt="" />');	// основное изображение
+			var preview = $('<img src="/'+tv.field.val()+'" alt="" />');				// превью
+			var acceptButton = $('<button class="cropParamsAccept">OK</button>');		// принять ширину и высоту
+			var cropButton = $('<button class="cropIt">Вырезать</button>');				// кропить
 			var imageInfo = $('<div class="imageInfo">Исходное изображение: '+baseImage.width+' x '+baseImage.height+'</div>');
-			var profileSelect = createProfileSelect();                                  // селект с профилями
+			var profileSelect = createProfileSelect();									// селект с профилями
 			var saveProfileButton = $('<button class="saveProfile">Сохр. профиль</button>');
 			var removeProfileButton = $('<button class="removeProfile">Удалить профиль</button>');
 
@@ -112,6 +114,8 @@
 			profileSelect.before('<label>Профиль:</label>').after(' &nbsp; ');
 
 			// развешиваем события
+			
+			// обновлеет превью
 			var updatePreview = function(c) {
 				// обновляем объект с координатами
 				coords = {
@@ -148,10 +152,9 @@
 					var ratio = c.w/c.h;
 					$('.cropPreview').height( Math.round($('.cropPreview').width()/ratio) );
 				}
-
-
-
 			};
+			
+			// включаем рабочую область кропа
 			img.Jcrop({
 				onChange: updatePreview,
 				onSelect: updatePreview
@@ -163,6 +166,7 @@
 				jcropAPI.disable();
 			});
 
+			// применяем размеры
 			acceptButton.click(function() {
 				var widthInput = $(cropTpl).find('[name="cropWidth"]');
 				var heightInput = $(cropTpl).find('[name="cropHeight"]');
@@ -172,9 +176,15 @@
 					jcropAPI.setOptions({
 						aspectRatio: false
 					});
+					
+					widthInput.removeClass('withError');
+					heightInput.removeClass('withError');
 
-					// выключаем сохранение профиля
+					// выключаем сохранение и удаление профиля
 					saveProfileButton.attr('disabled', true);
+					removeProfileButton.attr('disabled', true);
+					
+					jcropAPI.enable();
 				}
 				else {
 					// проверяем введённые значения на ошибки
@@ -218,12 +228,24 @@
 					else {
 						saveProfileButton.attr('disabled', true);
 					}
+					
+					// включаем удаление профиля
+					if(profileSelect.find('option[value="'+tnWidth+' x '+tnHeight+'"]').length && profileSelect.val()!='custom') {
+						//alert('found');
+						removeProfileButton.removeAttr('disabled');
+					}
+					else {
+						//alert(profileSelect.find('option').length);
+						//alert('not found');
+						removeProfileButton.attr('disabled', true);
+					}
 					jcropAPI.enable();
 				}
 				$(button).hide();
 				return false;
 			});
 
+			// выбираем профиль из списка
 			profileSelect.change(function() {
 				if($(this).val()=='custom') {
 					// активируем инпуты
@@ -249,6 +271,7 @@
 			});
 
 
+			// вырезаем
 			cropButton.click(function() {
 				var resize = (profileSelect.val()=='dontresize') ? 'n' : 'y';
 				if(resize=='n') {
@@ -305,7 +328,7 @@
 								renameCroppedPreview();
 								$(button).show();
 
-							}
+							};
 							newPreview.src = answer.path;
 						}
 					}
@@ -315,6 +338,8 @@
 				return false;
 			});
 
+			
+			// сохраняем новый профиль
 			saveProfileButton.click(function () {
 				$.post(
 					'/assets/plugins/tvcropper/saveprofile.ajax.php',
@@ -325,9 +350,11 @@
 					},
 					function(answer, status, xhr) {
 						if(answer.success) {
-							alert(answer.message);
-							profileSelect.prepend('<option name="'+tnWidth+' x '+tnHeight+'">'+tnWidth+' x '+tnHeight+'</option>');
+							profileSelect.prepend('<option value="'+tnWidth+' x '+tnHeight+'">'+tnWidth+' x '+tnHeight+'</option>');
+							profileSelect.val(tnWidth+' x '+tnHeight).change();
 							profileSelectCache = profileSelect.clone();
+							
+							alert(answer.message);
 						}
 						else if(answer.fail) {
 							alert(answer.message);
@@ -337,6 +364,32 @@
 				);
 				return false;
 			});
+			
+			// удаляем профиль
+			removeProfileButton.click(function() {
+				if(confirm('Удалить этот профиль')) {
+					$.post(
+						'/assets/plugins/tvcropper/saveprofile.ajax.php',
+						{
+							action: 'remove',
+							width: tnWidth,
+							height: tnHeight
+						},
+						function(answer, status, xhr) {
+							if(answer.success) {
+								profileSelect.find('option[value="'+tnWidth+' x '+tnHeight+'"]').remove();
+								profileSelect.val(profileSelect.find('option:first-child').val()).change();
+								alert(answer.message);
+							}
+							else if(answer.fail) {
+								alert(answer.message);
+							}
+						},
+						'json'
+					);
+				}
+				return false;
+			});
 
 			// выводим шаблон
 			$(button).before(cropTpl);
@@ -344,7 +397,7 @@
 			setTimeout(function() {
 				$(profileSelect).change();
 			}, 500);
-		}
+		};
 
 
 
@@ -352,7 +405,21 @@
 		regCss('/assets/plugins/tvcropper/css/jquery.Jcrop.css');
 
 		// ищем все поля изображений
-		$('input.imageField').each(function() {
+		var searchSelector;
+		
+		// если указаны конкретные tv
+		if(typeof tvcropperTVs != 'undefined') {
+			searchSelector = [];
+			for(var i=0; i<tvcropperTVs.length; i++) {
+				searchSelector.push('input.imageField#tv'+tvcropperTVs[i]);
+			}
+			searchSelector = searchSelector.join(', ');
+		}
+		else {
+			searchSelector = 'input.imageField';
+		}
+		
+		$(searchSelector).each(function() {
 
 			var tv = {};                                                                    // инстанс tv-параметра
 			tv.field = $(this);                                                             // jquery-объект инпута tv-параметра
@@ -369,13 +436,13 @@
 					tv.wrapper.find('.cropTpl, .addTnButton').remove();
 					//tv.wrapper.find('.addTnButton').show();
 					showImages(tv, baseImage);
-				}
+				};
 				baseImage.onerror = function() {
 					tv.wrapper.find('.cropTpl, .addTnButton').remove();
 					//tv.wrapper.find('.addTnButton').show();
-				}
+				};
 
-				baseImage.src = '/'+$(this).val();
+				baseImage.src = ('/'+$(this).val()).replace('//', '/');
 			});
 
 			// скрываем превью от managermanager
@@ -406,8 +473,11 @@
 			}
 		});
 
+		// показываем/убираем превью
 		$('.jcrop-holder').live('mouseover', function() {
-			$('.cropPreview').stop().fadeTo('fast', 1);
+			if($(window).width() > 940) {
+				$('.cropPreview').stop().fadeTo('fast', 1);
+			}
 		}).live('mouseout', function() {
 			$('.cropPreview').stop().fadeOut('normal', 0);
 		});
