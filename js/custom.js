@@ -33,7 +33,7 @@
 						output += '<option value="'+tvcropperProfiles[i]+'">'+tvcropperProfiles[i]+'</option>';
 					}
 				}
-				output += '<option value="dontresize">без ресайза</option>';
+				output += '<option value="dontresize">только кадрировать</option>';
 				output += '<option value="custom">новый...</option>';
 				output += '</select>';
 				
@@ -392,6 +392,8 @@
 							if(answer.success) {
 								profileSelect.find('option[value="'+tnWidth+' x '+tnHeight+'"]').remove();
 								profileSelect.val(profileSelect.find('option:first-child').val()).change();
+								profileSelectCache = profileSelect.clone();
+								
 								alert(answer.message);
 							}
 							else if(answer.fail) {

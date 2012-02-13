@@ -1,11 +1,19 @@
-﻿Код плагина:
-require $_SERVER['DOCUMENT_ROOT'].'/assets/plugins/tvcropper/tvcropper.php';
+Установка:
+
+* создаём новый плагин с именем TvCropper
+
+	* в поле "Код плагина" вставляем:
+	  require $_SERVER['DOCUMENT_ROOT'].'/assets/plugins/tvcropper/tvcropper.php';
+
+	* в поле "Конфигурация плагина" вставляем:
+	  &tvs=TV-params (comma separated ids);text;
+
+	* во вкладке "Системные события" отмечаем:
+	  OnDocFormPrerender, OnDocFormRender
+
+* копируем файл tvcropper.phx.php в папку модификаторов phx (по умолчанию: assets/plugins/phx/modifiers/)
 
 
-Конфигурация:
-&tvs=TV-params (comma separated ids);text;  
+Работа с превью:
 
-
-События:
-OnDocFormPrerender
-OnDocFormRender
+Вывести адрес превью изображения - [*tvname:tvcropper=`200x150`*], где "tvname" - имя tv-параматра, "200" - ширина превью, "150" - высота. Если файл превью не найден - выводится пустая строка (это позволяет более гибко настраивать вывод, например так - [*tvname:tvcropper=`200x200`:ifempty=`[*tvname*]`*]).
