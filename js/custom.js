@@ -218,6 +218,7 @@
 					// все данные корректны
 					tnWidth = widthInput.val();
 					tnHeight = heightInput.val()
+
 					var aspectRatio = tnWidth/tnHeight;
 
 					// меняем ratio
@@ -467,6 +468,7 @@
 
 				baseImage.src = ('/'+$(this).val()).replace('//', '/');
 			});
+			$(this).change();
 		});
 
 		// удаляем превью
