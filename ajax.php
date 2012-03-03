@@ -164,57 +164,6 @@ switch($_POST['type']) {
 			
 		break;
 		
-	# сохраняем / удаляем профиль
-	case 'saveprofile':
-			if(!is_numeric($_POST['width']) || !is_numeric($_POST['height'])) die();
-			if($_POST['action']=='add') {
-				$xml = simplexml_load_file('profiles.xml');
-				$root = $xml->xpath('/root');
-				$root = $root[0];
-			
-				$newProfile = $root->addChild('profile');
-				$newProfile->addAttribute('width', $_POST['width']);
-				$newProfile->addAttribute('height', $_POST['height']);
-			
-				if($xml->asXML('profiles.xml')) {
-					$output = array(
-							'success' => true,
-							'message' => 'Профиль сохранён'
-					);
-				}
-				else {
-					$output = array(
-							'fail' => true,
-							'message' => 'Не удалось сохранить профиль'
-					);
-				}
-			}
-			elseif($_POST['action']=='remove') {
-				$xml = new DOMDocument;
-				$xml->load('profiles.xml');
-			
-				$xpath = new DOMXPath($xml);
-				$profiles = $xpath->query('//profile[@width="'.$_POST['width'].'"][@height="'.$_POST['height'].'"]');
-			
-				foreach($profiles as $profile) {
-					$profile->parentNode->removeChild($profile);
-				}
-			
-				if($xml->save('profiles.xml')) {
-					$output = array(
-							'success' => true,
-							'message' => 'Профиль удалён'
-					);
-				}
-				else {
-					$output = array(
-							'fail' => true,
-							'message' => 'Не удалось удалить профиль'
-					);
-				}
-			}
-		break;
-		
 	default: die;
 }
 

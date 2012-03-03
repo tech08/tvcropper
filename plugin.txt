@@ -1,4 +1,4 @@
-Установка:
+﻿Установка:
 
 * создаём новый плагин с именем TvCropper
 
@@ -6,7 +6,7 @@
 	  require $_SERVER['DOCUMENT_ROOT'].'/assets/plugins/tvcropper/tvcropper.php';
 
 	* в поле "Конфигурация плагина" вставляем:
-	  &tvs=TV-params (comma separated ids);text;
+	  &tvs=TV-params (comma separated ids), empty - all image TVs;text; &profiles=Available size profiles (comma separated, e.g. "200x100, 300x150");textarea;250x150
 
 	* во вкладке "Системные события" отмечаем:
 	  OnDocFormPrerender, OnDocFormRender
@@ -16,4 +16,4 @@
 
 Работа с превью:
 
-Вывести адрес превью изображения - [*tvname:tvcropper=`200x150`*], где "tvname" - имя tv-параматра, "200" - ширина превью, "150" - высота. Если файл превью не найден - выводится пустая строка (это позволяет более гибко настраивать вывод, например так - [*tvname:tvcropper=`200x200`:ifempty=`[*tvname*]`*]).
+Вывести адрес превью изображения - [*tvname:tvcropper=`200x150`*], где "tvname" - имя tv-параматра, "200" - ширина превью, "150" - высота. Если файл превью не найден - выводится пустая строка (это позволяет более гибко настраивать вывод, например так - [*tvname:tvcropper=`200x200`:ifempty=`[*tvname*]`*]). Вывод только кадрированного превью - [*tvaname:tvcropper=`0x0`*]

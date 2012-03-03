@@ -1,9 +1,5 @@
 (function($) {
 	$(function() {
-
-		// временный объект селекта профилей
-		var profileSelectCache;
-
 		// генерирует рандом для сброса кеша статичных файлов
 		var getCacheRandom = function() {
 			var min = 0, max = 10000;
@@ -23,25 +19,16 @@
 
 		// создаёт объект селекта с профилями
 		var createProfileSelect = function() {
-			if(profileSelectCache) {
-				output = profileSelectCache.clone();
-			}
-			else {
-				var output = '<select class="profiles" name="profiles">';
-				if(tvcropperProfiles) {
-					for(var i=0; i<tvcropperProfiles.length; i++) {
-						output += '<option value="'+tvcropperProfiles[i]+'">'+tvcropperProfiles[i]+'</option>';
-					}
+			var output = '<select class="profiles" name="profiles">';
+			if(tvcropperProfiles) {
+				for(var i=0; i<tvcropperProfiles.length; i++) {
+					var profileDimensions = tvcropperProfiles[i].split(/\s*x\s*/);
+					output += '<option value="'+profileDimensions[0]+' x '+profileDimensions[1]+'">'+profileDimensions[0]+' x '+profileDimensions[1]+'</option>';
 				}
-				output += '<option value="dontresize">только кадрировать</option>';
-				output += '<option value="custom">новый...</option>';
-				output += '</select>';
-				
-				output = $(output);
-				profileSelectCache = output.clone();
 			}
-			
-			return output;
+			output += '<option value="dontresize">только кадрировать</option>';
+			output += '</select>';		
+			return $(output);
 		};
 
 		// показывает уже добавленные превью и кнопку "добавить"
@@ -88,20 +75,16 @@
 			var preview = $('<img src="/'+tv.field.val()+'" alt="" />');				// превью
 			var acceptButton = $('<input title="Применить" class="cropParamsAccept" type="image" src="/assets/plugins/tvcropper/images/ok.png" />');		// принять ширину и высоту
 			
-			//var cropButton = $('<button class="cropIt">Вырезать</button>');				// кропить
 			var cropButton = $('<input title="Вырезать" class="cropIt" type="image" src="/assets/plugins/tvcropper/images/crop.png" />');	// кропить
 			
 			var imageInfo = $('<div class="imageInfo">Исходное изображение: '+baseImage.width+' x '+baseImage.height+'</div>');
 			var profileSelect = createProfileSelect();									// селект с профилями
-			var saveProfileButton = $('<input title="Сохранить профиль" class="saveProfile" type="image" src="/assets/plugins/tvcropper/images/save.png" />');
-			var removeProfileButton = $('<input title="Удалить профиль" class="removeProfile" type="image" src="/assets/plugins/tvcropper/images/remove.png" />');
 			var closeWorkArea = $('<span class="closeWA" title="Закрыть">×</span>');
 			
 
 			// рабочий шаблон
 			var cropTpl = '<div class="cropTpl"><div class="cropTplInner"><div class="cropRight">'+
 				'<div class="cropControls">'+
-				'<label>Размеры:</label><input type="text" name="cropWidth" /> × <input type="text" name="cropHeight" />'+
 				'</div>'+
 				'<div class="cropPreview"></div>'+
 				'</div></div></div>';
@@ -115,10 +98,7 @@
 			cropTpl.find('.cropControls').prepend(profileSelect);
 			cropTpl.find('.cropPreview').width(previewWidth);
 			cropTpl.find('.cropPreview').html(preview);
-			profileSelect.after(saveProfileButton);
-			saveProfileButton.after(removeProfileButton);
-			removeProfileButton.before(' ').after(' &nbsp; ');
-			profileSelect.before('<label>Профиль:</label>').after(' &nbsp; ');
+			profileSelect.before('<label>Размеры:</label>').after(' &nbsp; ');
 
 			// развешиваем события
 			
@@ -172,52 +152,27 @@
 				jcropAPI = this;
 				jcropAPI.disable();
 			});
+			
 
-			// применяем размеры
-			acceptButton.click(function() {
-				var widthInput = $(cropTpl).find('[name="cropWidth"]');
-				var heightInput = $(cropTpl).find('[name="cropHeight"]');
-
+			// выбираем профиль из списка
+			profileSelect.change(function() {
 				if(profileSelect.val()=='dontresize') {
 					// меняем ratio
 					jcropAPI.setOptions({
 						aspectRatio: false
 					});
-					
-					widthInput.removeClass('withError');
-					heightInput.removeClass('withError');
-
-					// выключаем сохранение и удаление профиля
-					saveProfileButton.attr('disabled', true);
-					removeProfileButton.attr('disabled', true);
-					
-					jcropAPI.enable();
 				}
 				else {
-					// проверяем введённые значения на ошибки
-					var error = false;
-					if(widthInput.val().search(/^[1-9]\d*?/)) {
-						error = true;
-						widthInput.addClass('withError');
-					}
-					else {
-						widthInput.removeClass('withError');
-					}
-					if(heightInput.val().search(/^[1-9]\d*?/)) {
-						error = true;
-						heightInput.addClass('withError');
-					}
-					else {
-						heightInput.removeClass('withError');
-					}
-					if(error) {
-						saveProfileButton.attr('disabled', true);
+					var dimensions = profileSelect.val().split(' x ');
+					
+					// проверяем размеры на ошибки
+					if(dimensions[0].search(/^[1-9]\d*?/) || dimensions[1].search(/^[1-9]\d*?/)) {
 						return false;
 					}
 
 					// все данные корректны
-					tnWidth = widthInput.val();
-					tnHeight = heightInput.val()
+					tnWidth = dimensions[0];
+					tnHeight = dimensions[1];
 
 					var aspectRatio = tnWidth/tnHeight;
 
@@ -228,54 +183,10 @@
 
 					// обновляем высоту превью
 					cropTpl.find('.cropPreview').height( previewWidth/aspectRatio );
-
-					// включаем сохр. профиля
-					if(profileSelect.val()=='custom' && !profileSelect.find('option[value="'+tnWidth+' x '+tnHeight+'"]').length) {
-						saveProfileButton.removeAttr('disabled');
-					}
-					else {
-						saveProfileButton.attr('disabled', true);
-					}
-					
-					// включаем удаление профиля
-					if(profileSelect.find('option[value="'+tnWidth+' x '+tnHeight+'"]').length && profileSelect.val()!='custom') {
-						//alert('found');
-						removeProfileButton.removeAttr('disabled');
-					}
-					else {
-						//alert(profileSelect.find('option').length);
-						//alert('not found');
-						removeProfileButton.attr('disabled', true);
-					}
-					jcropAPI.enable();
 				}
+				jcropAPI.enable();
 				$(button).hide();
 				return false;
-			});
-
-			// выбираем профиль из списка
-			profileSelect.change(function() {
-				if($(this).val()=='custom') {
-					// активируем инпуты
-					$(cropTpl).find('[name="cropWidth"], [name="cropHeight"]').removeAttr('disabled');
-					$(acceptButton).removeAttr('disabled').click();
-				}
-				else if($(this).val()=='dontresize') {
-					// подставляем значения в инпуты и делаем неактивными
-					$(cropTpl).find('[name="cropWidth"]').val('').attr('disabled', true);
-					$(cropTpl).find('[name="cropHeight"]').val('').attr('disabled', true);
-					$(acceptButton).click().attr('disabled', true);
-				}
-				else {
-					var profileDimensions = $(this).val().split(' x ');
-					var width = profileDimensions[0];
-					var height = profileDimensions[1];
-
-					// подставляем значения в инпуты и делаем неактивными
-					$(cropTpl).find('[name="cropWidth"]').val(width).attr('disabled', true);
-					$(cropTpl).find('[name="cropHeight"]').val(height).attr('disabled', true);
-					$(acceptButton).click().attr('disabled', true);
-				}
 			});
 
 
@@ -348,64 +259,10 @@
 					'json'
 				);
 				return false;
-			});
-
+			});	
 			
-			// сохраняем новый профиль
-			saveProfileButton.click(function () {
-				$.post(
-					'/assets/plugins/tvcropper/ajax.php',
-					{
-						type: 'saveprofile',
-						action: 'add',
-						width: tnWidth,
-						height: tnHeight
-					},
-					function(answer, status, xhr) {
-						if(answer.success) {
-							profileSelect.prepend('<option value="'+tnWidth+' x '+tnHeight+'">'+tnWidth+' x '+tnHeight+'</option>');
-							profileSelect.val(tnWidth+' x '+tnHeight).change();
-							profileSelectCache = profileSelect.clone();
-							
-							alert(answer.message);
-						}
-						else if(answer.fail) {
-							alert(answer.message);
-						}
-					},
-					'json'
-				);
-				return false;
-			});
 			
-			// удаляем профиль
-			removeProfileButton.click(function() {
-				if(confirm('Удалить этот профиль?')) {
-					$.post(
-						'/assets/plugins/tvcropper/ajax.php',
-						{
-							type: 'saveprofile',
-							action: 'remove',
-							width: tnWidth,
-							height: tnHeight
-						},
-						function(answer, status, xhr) {
-							if(answer.success) {
-								profileSelect.find('option[value="'+tnWidth+' x '+tnHeight+'"]').remove();
-								profileSelect.val(profileSelect.find('option:first-child').val()).change();
-								profileSelectCache = profileSelect.clone();
-								
-								alert(answer.message);
-							}
-							else if(answer.fail) {
-								alert(answer.message);
-							}
-						},
-						'json'
-					);
-				}
-				return false;
-			});
+			
 			
 			// закрываем рабочую область
 			closeWorkArea.click(function() {
