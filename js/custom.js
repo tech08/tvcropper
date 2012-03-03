@@ -1,5 +1,7 @@
 (function($) {
 	$(function() {
+		var pluginUrl = '/assets/plugins/tvcropper';
+		
 		// генерирует рандом для сброса кеша статичных файлов
 		var getCacheRandom = function() {
 			var min = 0, max = 10000;
@@ -35,7 +37,7 @@
 		var showImages = function(tv, baseImage) {
 
 			$.post(
-				'/assets/plugins/tvcropper/ajax.php',
+				pluginUrl+'/ajax.php',
 				{
 					type: 'tnsearch',
 					path: baseImage.src
@@ -73,9 +75,9 @@
 			// создаём элементы с событиями
 			var img = $('<img class="cropImage" src="/'+tv.field.val()+'" alt="" />');	// основное изображение
 			var preview = $('<img src="/'+tv.field.val()+'" alt="" />');				// превью
-			var acceptButton = $('<input title="Применить" class="cropParamsAccept" type="image" src="/assets/plugins/tvcropper/images/ok.png" />');		// принять ширину и высоту
+			var acceptButton = $('<input title="Применить" class="cropParamsAccept" type="image" src="'+pluginUrl+'/images/ok.png" />');		// принять ширину и высоту
 			
-			var cropButton = $('<input title="Вырезать" class="cropIt" type="image" src="/assets/plugins/tvcropper/images/crop.png" />');	// кропить
+			var cropButton = $('<input title="Вырезать" class="cropIt" type="image" src="'+pluginUrl+'/images/crop.png" />');	// кропить
 			
 			var imageInfo = $('<div class="imageInfo">Исходное изображение: '+baseImage.width+' x '+baseImage.height+'</div>');
 			var profileSelect = createProfileSelect();									// селект с профилями
@@ -213,7 +215,7 @@
 
 				// отправляем запрос на ресайз
 				$.post(
-					'/assets/plugins/tvcropper/ajax.php',
+					pluginUrl+'/ajax.php',
 					{
 						type: 'crop',
 						source_image: baseImage.src,
@@ -282,8 +284,8 @@
 
 
 
-		regCss('/assets/plugins/tvcropper/css/style.css');
-		regCss('/assets/plugins/tvcropper/css/jquery.Jcrop.css');
+		regCss(pluginUrl+'/css/style.css');
+		regCss(pluginUrl+'/css/jquery.Jcrop.css');
 
 		// ищем все поля изображений
 		var searchSelector;
@@ -333,7 +335,7 @@
 			if(confirm('Удалить это превью?')) {
 				var thisContainer = $(this).parents('.cropTpl');
 				$.post(
-					'/assets/plugins/tvcropper/ajax.php',
+					pluginUrl+'/ajax.php',
 					{
 						type: 'remove',
 						path: thisContainer.find('.croppedPreview').attr('src')
