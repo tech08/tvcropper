@@ -82,14 +82,12 @@
 	right: 15px;
 	z-index: 3;
 	border: 1px solid #777;
-	display: none;
+	opacity: 0;
+	filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0);
 	box-shadow: 0 0 10px 3px rgba(0,0,0,.5);
 }
 
 .cropParamsAccept {
-	/*position: relative;
-	bottom: 12px;
-	left: 5px;*/
 	width: 35px;
 	overflow: auto;
 }
@@ -98,6 +96,7 @@ div.imageInfo {
 	font: bold 11px Verdana, Geneva, Arial, Helvetica, sans-serif;
 	color: #999;
 	padding-bottom: 5px;
+	padding-right: 14px;
 	display: block;
 	margin: 0;
 }

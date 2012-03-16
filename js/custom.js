@@ -153,10 +153,18 @@
 				boundy = bounds[1];
 				jcropAPI = this;
 				jcropAPI.disable();
-			});
-			
-
-			// выбираем профиль из списка
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				// выбираем профиль из списка
 			profileSelect.change(function() {
 				if(profileSelect.val()=='dontresize') {
 					// меняем ratio
@@ -262,6 +270,27 @@
 				);
 				return false;
 			});	
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+			});
+			
+
+			
 			
 			
 			
@@ -361,7 +390,7 @@
 				$(this).parents('.cropTpl').find('.cropPreview').stop().fadeTo('fast', 1);
 			}
 		}).live('mouseout', function() {
-			$(this).parents('.cropTpl').find('.cropPreview').stop().fadeOut('normal', 0);
+			$(this).parents('.cropTpl').find('.cropPreview').stop().fadeTo('normal', 0);
 		});
 	});
 })(jQuery);
