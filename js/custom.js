@@ -35,7 +35,6 @@
 
 		// показывает уже добавленные превью и кнопку "добавить"
 		var showImages = function(tv, baseImage) {
-
 			$.post(
 				pluginUrl+'/ajax.php',
 				{
@@ -43,6 +42,7 @@
 					path: baseImage.src
 				},
 				function(answer, status, xhr) {
+					tv.container.empty();
 					// выводим все превьюшки
 					if(answer) {
 						for(var i=0; i<answer.length; i++) {
@@ -154,146 +154,112 @@
 				jcropAPI = this;
 				jcropAPI.disable();
 				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
 				// выбираем профиль из списка
-			profileSelect.change(function() {
-				if(profileSelect.val()=='dontresize') {
-					// меняем ratio
-					jcropAPI.setOptions({
-						aspectRatio: false
-					});
-				}
-				else {
-					var dimensions = profileSelect.val().split(' x ');
-					
-					// проверяем размеры на ошибки
-					if(dimensions[0].search(/^[1-9]\d*?/) || dimensions[1].search(/^[1-9]\d*?/)) {
-						return false;
+				profileSelect.change(function() {
+					if(profileSelect.val()=='dontresize') {
+						// меняем ratio
+						jcropAPI.setOptions({
+							aspectRatio: false
+						});
 					}
-
-					// все данные корректны
-					tnWidth = dimensions[0];
-					tnHeight = dimensions[1];
-
-					var aspectRatio = tnWidth/tnHeight;
-
-					// меняем ratio
-					jcropAPI.setOptions({
-						aspectRatio: aspectRatio
-					});
-
-					// обновляем высоту превью
-					cropTpl.find('.cropPreview').height( previewWidth/aspectRatio );
-				}
-				jcropAPI.enable();
-				$(button).hide();
-				return false;
-			});
-
-
-			// вырезаем
-			cropButton.click(function() {
-				var resize = (profileSelect.val()=='dontresize') ? 'n' : 'y';
-				if(resize=='n') {
-					tnWidth = 0;
-					tnHeight = 0;
-				}
-
-				var c = {};
-				for(prop in coords) {
-					c[prop] = coords[prop];
-				}
-
-				// вычисляем, во сколько раз рабочее изображение меньше
-				var sizeRatio = baseImage.width / img.width();
-
-				// корректируем координаты
-				for(dim in c) {
-					c[dim] = Math.round(c[dim]*sizeRatio);
-				}
-
-				// отправляем запрос на ресайз
-				$.post(
-					pluginUrl+'/ajax.php',
-					{
-						type: 'crop',
-						source_image: baseImage.src,
-						source_x: c.x1,
-						source_y: c.y1,
-						source_width: c.w,
-						source_height: c.h,
-						dest_width: tnWidth,
-						dest_height: tnHeight,
-						resize: resize
-					},
-					function(answer, status, xhr) {
-						if(answer.success) {
-							var newPreview = new Image;
-							newPreview.onload = function() {
-								// если уже есть такое превью, то просто обновляем там картинку
-								if( tv.wrapper.find('.cropTpl[rel="'+tnWidth+'x'+tnHeight+'"]').length ) {
-									tv.wrapper.find('.cropTpl[rel="'+tnWidth+'x'+tnHeight+'"]')
-										.empty()
-										.append('<div class="imageInfo"><em>Превью: '+tnWidth+' x '+tnHeight+'</em> <span title="Удалить">(×)</span></div>')
-										.append('<img class="croppedPreview" src="'+answer.path+'?'+getCacheRandom()+'" alt="" />');
-
-									cropTpl.remove();
-								}
-								else {
-									cropTpl
-										.empty()
-										.attr('rel', tnWidth+'x'+tnHeight)
-										.append('<div class="imageInfo"><em>Превью: '+tnWidth+' x '+tnHeight+'</em> <span title="Удалить">(×)</span></div>')
-										.append('<img class="croppedPreview" src="'+answer.path+'?'+getCacheRandom()+'" alt="" />');
-								}
-								renameCroppedPreview();
-								$(button).show();
-
-							};
-							newPreview.src = answer.path;
+					else {
+						var dimensions = profileSelect.val().split(' x ');
+						
+						// проверяем размеры на ошибки
+						if(dimensions[0].search(/^[1-9]\d*?/) || dimensions[1].search(/^[1-9]\d*?/)) {
+							return false;
 						}
-						else if(answer.fail) {
-							alert(answer.message);
-						}
+	
+						// все данные корректны
+						tnWidth = dimensions[0];
+						tnHeight = dimensions[1];
+	
+						var aspectRatio = tnWidth/tnHeight;
+	
+						// меняем ratio
+						jcropAPI.setOptions({
+							aspectRatio: aspectRatio
+						});
+	
+						// обновляем высоту превью
+						cropTpl.find('.cropPreview').height( previewWidth/aspectRatio );
 					}
-					,
-					'json'
-				);
-				return false;
-			});	
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-			});
-			
-
-			
-			
-			
-			
+					jcropAPI.enable();
+					$(button).hide();
+					return false;
+				});
+	
+				// вырезаем
+				cropButton.click(function() {
+					var resize = (profileSelect.val()=='dontresize') ? 'n' : 'y';
+					if(resize=='n') {
+						tnWidth = 0;
+						tnHeight = 0;
+					}
+	
+					var c = {};
+					for(prop in coords) {
+						c[prop] = coords[prop];
+					}
+	
+					// вычисляем, во сколько раз рабочее изображение меньше
+					var sizeRatio = baseImage.width / img.width();
+	
+					// корректируем координаты
+					for(dim in c) {
+						c[dim] = Math.round(c[dim]*sizeRatio);
+					}
+	
+					// отправляем запрос на ресайз
+					$.post(
+						pluginUrl+'/ajax.php',
+						{
+							type: 'crop',
+							source_image: baseImage.src,
+							source_x: c.x1,
+							source_y: c.y1,
+							source_width: c.w,
+							source_height: c.h,
+							dest_width: tnWidth,
+							dest_height: tnHeight,
+							resize: resize
+						},
+						function(answer, status, xhr) {
+							if(answer.success) {
+								var newPreview = new Image;
+								newPreview.onload = function() {
+									// если уже есть такое превью, то просто обновляем там картинку
+									if( tv.wrapper.find('.cropTpl[rel="'+tnWidth+'x'+tnHeight+'"]').length ) {
+										tv.wrapper.find('.cropTpl[rel="'+tnWidth+'x'+tnHeight+'"]')
+											.empty()
+											.append('<div class="imageInfo"><em>Превью: '+tnWidth+' x '+tnHeight+'</em> <span title="Удалить">(×)</span></div>')
+											.append('<img class="croppedPreview" src="'+answer.path+'?'+getCacheRandom()+'" alt="" />');
+	
+										cropTpl.remove();
+									}
+									else {
+										cropTpl
+											.empty()
+											.attr('rel', tnWidth+'x'+tnHeight)
+											.append('<div class="imageInfo"><em>Превью: '+tnWidth+' x '+tnHeight+'</em> <span title="Удалить">(×)</span></div>')
+											.append('<img class="croppedPreview" src="'+answer.path+'?'+getCacheRandom()+'" alt="" />');
+									}
+									renameCroppedPreview();
+									$(button).show();
+	
+								};
+								newPreview.src = answer.path;
+							}
+							else if(answer.fail) {
+								alert(answer.message);
+							}
+						}
+						,
+						'json'
+					);
+					return false;
+				});
+			});			
 			
 			// закрываем рабочую область
 			closeWorkArea.click(function() {
@@ -310,8 +276,6 @@
 				$(profileSelect).change();
 			}, 500);
 		};
-
-
 
 		regCss(pluginUrl+'/css/style.css');
 		regCss(pluginUrl+'/css/jquery.Jcrop.css');
@@ -332,7 +296,6 @@
 		}
 		
 		$(searchSelector).each(function() {
-
 			var tv = {};                                                                    // инстанс tv-параметра
 			tv.field = $(this);                                                             // jquery-объект инпута tv-параметра
 			tv.wrapper = tv.field.parents('td');                                            // jquery-объект ячейки tv-параметра
@@ -344,18 +307,17 @@
 			$(this).change(function() {
 				// смотрим, есть ли такая картинка
 				var baseImage = new Image;
+				
 				baseImage.onload = function() {
-					tv.wrapper.find('.cropTpl, .addTnButton').remove();
-					//tv.wrapper.find('.addTnButton').show();
 					showImages(tv, baseImage);
 				};
 				baseImage.onerror = function() {
-					tv.wrapper.find('.cropTpl, .addTnButton').remove();
-					//tv.wrapper.find('.addTnButton').show();
+					tv.container.empty();
 				};
 
 				baseImage.src = ('/'+$(this).val()).replace('//', '/');
 			});
+			
 			$(this).change();
 		});
 
