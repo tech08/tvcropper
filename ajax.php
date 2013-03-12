@@ -12,36 +12,20 @@ session_start();
 
 if(!isset($_SESSION['mgrValidated']) || !isset($_POST['type'])) die('not enougn mana...');
 
-# возвращает адрес сервера
-if(!function_exists('getSiteUrl')) {
-	function getSiteUrl() {
-		$httpsPort = 443;
-		$siteUrl= ((isset ($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on') || $_SERVER['SERVER_PORT'] == $httpsPort) ? 'https://' : 'http://';
-		$siteUrl .= $_SERVER['HTTP_HOST'];
-		if ($_SERVER['SERVER_PORT'] != 80) {
-			$siteUrl= str_replace(':' . $_SERVER['SERVER_PORT'], '', $siteUrl); // remove port from HTTP_HOST
-		}
-		$siteUrl .= ($_SERVER['SERVER_PORT'] == 80 || (isset ($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on') || $_SERVER['SERVER_PORT'] == $httpsPort) ? '' : ':' . $_SERVER['SERVER_PORT'];
-		return $siteUrl.'/';
-	}
-}
-
 
 # возвращает абсолютный путь до изображения
 if(!function_exists('getImagePath')) {
 	function getImagePath($url) {
-		$siteUrl = getSiteUrl();
-			
 		# если url задан вместе с сервером
-		if(strpos($url, $siteUrl)===0) {
-			$url = end(explode($siteUrl, $url));
+		if(strpos($url, '://')!==false) {
+			$url = preg_replace('#https?://[^/]+/#Uusi', '', $url);
 		}
 			
 		# удаляем слеш, если он есть
 		$url = trim($url, '/');
 		$url = str_replace('/', DIRECTORY_SEPARATOR, $url);
 		$url = reset(explode('?', $url));
-			
+		
 		return $_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.$url;
 	}
 }
