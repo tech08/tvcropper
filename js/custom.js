@@ -54,12 +54,13 @@
 						}
 					}
 
-					var template = '<button class="addTnButton">Ред. превью</button>';
-					tv.container.append( $(template) );
+					var template = $('<button class="addTnButton">Ред. превью</button>');
+					tv.container.append(template);
 
 					renameCroppedPreview();
 
-					tv.wrapper.find('.addTnButton').click(function() {
+					//tv.wrapper.find('.addTnButton').click(function() {
+					template.click(function() {
 						openWorkLayout(tv, this, baseImage);
 						return false;
 					});
@@ -104,7 +105,7 @@
 
 			// развешиваем события
 			
-			// обновлеет превью
+			// обновляем превью
 			var updatePreview = function(c) {
 				// обновляем объект с координатами
 				coords = {
@@ -229,8 +230,11 @@
 								var newPreview = new Image;
 								newPreview.onload = function() {
 									// если уже есть такое превью, то просто обновляем там картинку
-									if( tv.wrapper.find('.cropTpl[rel="'+tnWidth+'x'+tnHeight+'"]').length ) {
-										tv.wrapper.find('.cropTpl[rel="'+tnWidth+'x'+tnHeight+'"]')
+									/*if( tv.wrapper.find('.cropTpl[rel="'+tnWidth+'x'+tnHeight+'"]').length ) {
+										tv.wrapper.find('.cropTpl[rel="'+tnWidth+'x'+tnHeight+'"]')*/
+									var localWrapper = cropTpl.parent('.tvCropContainer');
+									if( localWrapper.find('.cropTpl[rel="'+tnWidth+'x'+tnHeight+'"]').length ) {
+										localWrapper.find('.cropTpl[rel="'+tnWidth+'x'+tnHeight+'"]')
 											.empty()
 											.append('<div class="imageInfo"><em>Превью: '+tnWidth+' x '+tnHeight+'</em> <span title="Удалить">(×)</span></div>')
 											.append('<img class="croppedPreview" src="'+answer.path+'?'+getCacheRandom()+'" alt="" />');
@@ -288,6 +292,7 @@
 			searchSelector = [];
 			for(var i=0; i<tvcropperTVs.length; i++) {
 				searchSelector.push('input.imageField#tv'+tvcropperTVs[i]);
+				searchSelector.push('input.image[id^="tv'+tvcropperTVs[i]+'image"]');
 			}
 			searchSelector = searchSelector.join(', ');
 		}
@@ -301,10 +306,10 @@
 			tv.wrapper = tv.field.parents('td');                                            // jquery-объект ячейки tv-параметра
 			tv.container = $('<div class="tvCropContainer"></div>').appendTo( tv.wrapper ); // делаем контейнер для наших нужд
 
-
 			var container = $('<div></div>').appendTo( $(this).parents('td') );
-
+			
 			$(this).change(function() {
+			
 				// смотрим, есть ли такая картинка
 				var baseImage = new Image;
 				
