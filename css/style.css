@@ -45,10 +45,6 @@
 	*display: inline;
 }
 
-.cropImage {
-	max-width: 500px;
-}
-
 .cropControls {
 	padding: 15px 0 5px;
 	text-align: center;

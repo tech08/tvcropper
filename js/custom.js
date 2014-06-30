@@ -147,7 +147,9 @@
 			// включаем рабочую область кропа
 			img.Jcrop({
 				onChange: updatePreview,
-				onSelect: updatePreview
+				onSelect: updatePreview,
+				boxWidth: 500,
+				boxHeight: 500
 			},function() {
 				var bounds = this.getBounds();
 				boundx = bounds[0];
@@ -327,7 +329,7 @@
 		});
 
 		// удаляем превью
-		$('.imageInfo span').live('click', function() {
+		$(document).on('click', '.imageInfo span', function() {
 			if(confirm('Удалить это превью?')) {
 				var thisContainer = $(this).parents('.cropTpl');
 				$.post(
@@ -352,11 +354,11 @@
 		});
 
 		// показываем/убираем превью
-		$('.jcrop-holder').live('mouseover', function() {
+		$(document).on('mouseover', '.jcrop-holder', function() {
 			if($(window).width() > 940) {
 				$(this).parents('.cropTpl').find('.cropPreview').stop().fadeTo('fast', 1);
 			}
-		}).live('mouseout', function() {
+		}).on('mouseout', '.jcrop-holder', function() {
 			$(this).parents('.cropTpl').find('.cropPreview').stop().fadeTo('normal', 0);
 		});
 	});

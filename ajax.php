@@ -1,9 +1,9 @@
 <?php
 # прикручиваем modx API
-define('MODX_MANAGER_PATH', $_SERVER['DOCUMENT_ROOT'].'/manager');
-require_once MODX_MANAGER_PATH.'/includes/protect.inc.php';
-require_once MODX_MANAGER_PATH.'/includes/config.inc.php';
-require_once MODX_MANAGER_PATH.'/includes/document.parser.class.inc.php';
+define('MODX_MANAGER_PATH', $_SERVER['DOCUMENT_ROOT'].'/manager/');
+require_once MODX_MANAGER_PATH.'includes/protect.inc.php';
+require_once MODX_MANAGER_PATH.'includes/config.inc.php';
+require_once MODX_MANAGER_PATH.'includes/document.parser.class.inc.php';
 $modx = new DocumentParser;
 $modx->loadExtension("ManagerAPI");
 $modx->getSettings();
