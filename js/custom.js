@@ -24,12 +24,21 @@
 			var output = '<select class="profiles" name="profiles">';
 			if(tvcropperProfiles) {
 				for(var i=0; i<tvcropperProfiles.length; i++) {
-					var profileDimensions = tvcropperProfiles[i].split(/\s*x\s*/);
-					output += '<option value="'+profileDimensions[0]+' x '+profileDimensions[1]+'">'+profileDimensions[0]+' x '+profileDimensions[1]+'</option>';
+					var arProfile = tvcropperProfiles[i].split('|');
+					var profileDimensions = arProfile[0].split(/\s*x\s*/);
+					var dimensionName;
+					
+					if(arProfile.length == 2) {
+						dimensionName = arProfile[1] + ' ('+profileDimensions[0]+' x '+profileDimensions[1]+')';
+					}
+					else {
+						dimensionName = profileDimensions[0]+' x '+profileDimensions[1];
+					}
+					output += '<option value="'+profileDimensions[0]+' x '+profileDimensions[1]+'">'+dimensionName+'</option>';
 				}
 			}
 			output += '<option value="dontresize">только кадрировать</option>';
-			output += '</select>';		
+			output += '</select>';
 			return $(output);
 		};
 
